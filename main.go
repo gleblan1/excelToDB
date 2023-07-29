@@ -33,7 +33,7 @@ func main() {
 	}
 
 	// Чтение данных из Excel-файла
-	dataFromExcel, err := excel.ReadFromExcelFile("input.xlsx")
+	dataFromExcel, err := excel.ReadFromExcelFile("xslx/input.xlsx")
 	if err != nil {
 		log.Fatal("Ошибка чтения данных из Excel-файла:", err)
 	}
@@ -55,7 +55,7 @@ func main() {
 	}
 
 	// Запись данных из базы данных в новый Excel-файл
-	err = excel.WriteToExcelFile(dataFromDB, "output.xlsx")
+	err = excel.WriteToExcelFile(dataFromDB, "xlsx/output.xlsx")
 	if err != nil {
 		log.Fatal("Ошибка записи данных в Excel-файл:", err)
 	}
