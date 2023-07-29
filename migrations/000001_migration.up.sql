@@ -1,8 +1,8 @@
 -- +migrate Up
 CREATE TABLE IF NOT EXISTS data (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    column1 VARCHAR(255) NOT NULL,
-    column2 VARCHAR(255) NOT NULL
+    column1 VARCHAR(255),
+    column2 VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS water_check (

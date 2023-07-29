@@ -21,13 +21,14 @@ func ReadFromExcelFile(filePath string) ([]domain.Data, error) {
 
 	var data []domain.Data
 	for _, row := range rows {
-		if len(row) >= 2 {
-			d := domain.Data{
-				Column1: row[0],
-				Column2: row[1],
-			}
-			data = append(data, d)
+		var d domain.Data
+		if len(row) >= 1 {
+			d.Column1 = row[0]
 		}
+		if len(row) >= 2 {
+			d.Column2 = row[1]
+		}
+		data = append(data, d)
 	}
 
 	return data, nil
