@@ -1,1 +1,2 @@
 dbPass: "a910111A!"
+dbOpen: "root:a910111A!@tcp(127.0.0.1:3306)/excelToDB?parseTime=true"

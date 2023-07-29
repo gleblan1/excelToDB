@@ -15,18 +15,24 @@ import (
 func main() {
 
 	if err := initConfig(); err != nil {
-		log.Fatalf("ошибка в чтении конфиг файла: %s", err.Error())
+		log.Fatal("Ошибка чтения конфига", err.Error())
 	}
 
 	// Устанавливаем соединение с базой данных
-	db, err := sql.Open("mysql", "root:a910111A!@tcp(127.0.0.1:3306)/excelToDB?parseTime=true")
+	db, err := sql.Open("mysql", viper.GetString("dbOpen"))
 
 	if err != nil {
 		log.Fatal("Ошибка открытия базы данных:", err)
 	}
 	defer db.Close()
 
-	// Применяем миграции
+	// Откатываем миграции вниз перед применением
+	err = rollbackMigrations(db)
+	if err != nil {
+		log.Fatal("Ошибка отката миграций:", err)
+	}
+
+	// Применяем миграции вверх
 	err = applyMigrations(db)
 	if err != nil {
 		log.Fatal("Ошибка применения миграций:", err)
@@ -63,15 +69,21 @@ func main() {
 	log.Println("Программа успешно завершена.")
 }
 
-// applyMigrations применяет миграции базы данных
+// applyMigrations применяет миграции базы данных вверх
 func applyMigrations(db *sql.DB) error {
-	// Инициализируем новый источник миграций из файловой системы
 	migrations := &migrate.FileMigrationSource{
 		Dir: "migrations",
 	}
-
-	// Применяем миграции
 	_, err := migrate.Exec(db, "mysql", migrations, migrate.Up)
+	return err
+}
+
+// rollbackMigrations откатывает все миграции базы данных вниз
+func rollbackMigrations(db *sql.DB) error {
+	migrations := &migrate.FileMigrationSource{
+		Dir: "migrations",
+	}
+	_, err := migrate.ExecMax(db, "mysql", migrations, migrate.Down, 0)
 	return err
 }
 
