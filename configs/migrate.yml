@@ -1,3 +1,0 @@
-database: mysql
-dsn: root:a910111A!@tcp(127.0.0.1:3306)/excelToDB
-dir: ./db_migrations
