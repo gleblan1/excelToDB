@@ -1,8 +1,7 @@
-package repository
+package domain
 
 import (
 	"database/sql"
-	"excelToDb/domain"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/spf13/viper"
@@ -29,7 +28,7 @@ func NewMySQLRepository() *MySQLRepository {
 	return &MySQLRepository{db: db}
 }
 
-func (r *MySQLRepository) SaveData(data []domain.Data) error {
+func (r *MySQLRepository) SaveData(data []Data) error {
 	// Подготовка SQL-запроса для вставки данных
 	query := "INSERT INTO data (column1, column2) VALUES (?, ?)"
 
@@ -60,7 +59,7 @@ func (r *MySQLRepository) SaveData(data []domain.Data) error {
 }
 
 // GetData получает данные из базы данных.
-func (r *MySQLRepository) GetData() ([]domain.Data, error) {
+func (r *MySQLRepository) GetData() ([]Data, error) {
 	// Подготовка SQL-запроса для получения данных
 	query := "SELECT column1, column2 FROM data"
 
@@ -70,9 +69,9 @@ func (r *MySQLRepository) GetData() ([]domain.Data, error) {
 	}
 	defer rows.Close()
 
-	var data []domain.Data
+	var data []Data
 	for rows.Next() {
-		var d domain.Data
+		var d Data
 		err := rows.Scan(&d.Column1, &d.Column2)
 		if err != nil {
 			log.Println(err)

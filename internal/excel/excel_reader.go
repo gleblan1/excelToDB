@@ -3,7 +3,7 @@ package excel
 import (
 	"github.com/xuri/excelize/v2"
 
-	"excelToDb/domain"
+	"excelToDb/internal/domain"
 )
 
 // ReadFromExcelFile считывает данные из файла Excel и возвращает их в виде среза структур domain.Data и ошибку.

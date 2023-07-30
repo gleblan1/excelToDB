@@ -1,10 +1,17 @@
+// main.go
 package main
+
+// @title ExcelToDB API
+// @version 1.0
+// @description This is an API for reading data from an Excel file, saving it to a database, and fetching data from the database.
+// @host localhost:8080
+// @BasePath /
 
 import (
 	"database/sql"
-	"excelToDb/excel"
-	datarepository "excelToDb/repository"
-	"excelToDb/usecase"
+	"excelToDb/internal/domain"
+	"excelToDb/internal/handler"
+	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"log"
 
@@ -13,7 +20,6 @@ import (
 )
 
 func main() {
-
 	if err := initConfig(); err != nil {
 		log.Fatal("Ошибка чтения конфига", err.Error())
 	}
@@ -38,35 +44,21 @@ func main() {
 		log.Fatal("Ошибка применения миграций:", err)
 	}
 
-	// Чтение данных из Excel-файла
-	dataFromExcel, err := excel.ReadFromExcelFile("input.xlsx")
-	if err != nil {
-		log.Fatal("Ошибка чтения данных из Excel-файла:", err)
-	}
+	// Создаем новый экземпляр DataUsecase
+	dataUsecase := domain.NewDataUsecase(domain.NewMySQLRepository())
 
-	// Создание репозитория и usecase для работы с данными
-	repo := datarepository.NewMySQLRepository()
-	dataUsecase := usecase.NewDataUsecase(repo)
+	// Создаем новый экземпляр DataHandler
+	dataHandler := handler.NewDataHandler(*dataUsecase)
 
-	// Запись данных в базу данных
-	err = dataUsecase.SaveDataToDB(dataFromExcel)
-	if err != nil {
-		log.Fatal("Ошибка записи данных в базу данных:", err)
-	}
+	r := gin.Default()
 
-	// Получение данных из базы данных
-	dataFromDB, err := dataUsecase.GetDataFromDB()
-	if err != nil {
-		log.Fatal("Ошибка получения данных из базы данных:", err)
-	}
+	// Маршрутизируем GET-запрос на обработчик чтения данных из Excel-файла
+	r.GET("/read", dataHandler.ReadData)
 
-	// Запись данных из базы данных в новый Excel-файл
-	err = excel.WriteToExcelFile(dataFromDB, "output.xlsx")
-	if err != nil {
-		log.Fatal("Ошибка записи данных в Excel-файл:", err)
-	}
+	// Маршрутизируем POST-запрос на обработчик записи данных в базу данных
+	r.POST("/write", dataHandler.WriteData)
 
-	log.Println("Программа успешно завершена.")
+	r.Run(":8080")
 }
 
 // applyMigrations применяет миграции базы данных вверх

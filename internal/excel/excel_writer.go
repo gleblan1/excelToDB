@@ -1,7 +1,7 @@
 package excel
 
 import (
-	"excelToDb/domain"
+	"excelToDb/internal/domain"
 	"github.com/xuri/excelize/v2"
 	"strconv"
 )
